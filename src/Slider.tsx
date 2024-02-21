@@ -35,6 +35,10 @@ export default function Slider(props: Props) {
   };
 
   useEffect(() => {
+    const style = containerRef.current?.style;
+    if (style) {
+      style.width = slidesRefs[0].current?.offsetWidth + "px";
+    }
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
@@ -81,10 +85,8 @@ export default function Slider(props: Props) {
     animation.goToNext();
   };
 
-  const allButtonsClass = "mt-3 mb-6 flex justify-center items-center";
-
   return (
-    <div>
+    <div className="slider-root">
       <div className={"slider-buttons-wrapper"}>
         <button
           onClick={onClickButtonPrev}

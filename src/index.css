@@ -1,3 +1,9 @@
+.slider-root {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
 .button {
     background-color: red;
 }
@@ -68,13 +74,14 @@
     position: absolute;
     display: flex;
     overflow: hidden;
-    width: 100%;
-    min-height: 100%;
     user-select: none;
+    top: 100px;
 }
 
 .slide {
-    min-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .svg {
@@ -85,7 +92,7 @@
 }
 
 .content {
-    width: 100%;
+    width: 500px;
     height: 500px;
     background-color: black;
     color: white;
