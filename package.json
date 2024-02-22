@@ -1,6 +1,6 @@
 {
     "name": "react-dot-slider",
-    "version": "0.0.21",
+    "version": "0.0.22",
     "description": "React light slider component with configurable navigation",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",

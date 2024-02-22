@@ -15,7 +15,7 @@ type Story = StoryObj<typeof Slider>
 
 export const Main: Story = {
     render: (args) => (
-        <Slider {...args}>
+        <Slider width='500px'>
             <Slide>
                 <div className='content'>1</div>
             </Slide>

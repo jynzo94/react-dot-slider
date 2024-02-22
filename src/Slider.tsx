@@ -50,12 +50,12 @@ export default function Slider(props: Props) {
         }
     }
 
-    useLayoutEffect(() => {
-        const style = containerRef.current?.style
-        if (style) {
-            style.width = slidesRefs[0].current?.offsetWidth + 'px'
-        }
-    }, [])
+    // useLayoutEffect(() => {
+    //     const style = containerRef.current?.style
+    //     if (style) {
+    //         style.width = slidesRefs[0].current?.offsetWidth + 'px'
+    //     }
+    // }, [])
 
     useEffect(() => {
         document.addEventListener('keydown', onKeyDown)
