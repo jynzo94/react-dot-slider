@@ -8,6 +8,7 @@ export type SliderStyle = ArrowSvgStyles & OuterButtonStyles & InnerButtonStyles
 type Props = {
     children: ReactNode;
     styles?: SliderStyle;
+    width: string;
 };
 export default function Slider(props: Props): import("react/jsx-runtime").JSX.Element;
 export {};

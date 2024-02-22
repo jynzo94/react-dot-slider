@@ -7,7 +7,7 @@ import Slide from './Slide'
 describe('Slider', () => {
     test('renders Slider', () => {
         render(
-            <Slider>
+            <Slider width='500px'>
                 <Slide></Slide>
             </Slider>
         )

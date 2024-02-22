@@ -27,6 +27,7 @@ type SliderStyle = ArrowSvgStyles & OuterButtonStyles & InnerButtonStyles & {
 type Props = {
     children: ReactNode;
     styles?: SliderStyle;
+    width: string;
 };
 declare function Slider(props: Props): react_jsx_runtime.JSX.Element;
 

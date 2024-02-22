@@ -22,6 +22,7 @@ export type SliderStyle = ArrowSvgStyles &
 type Props = {
     children: ReactNode
     styles?: SliderStyle
+    width: string
 }
 
 export default function Slider(props: Props) {
@@ -48,13 +49,6 @@ export default function Slider(props: Props) {
             animation.goToNext()
         }
     }
-
-    useLayoutEffect(() => {
-        const style = containerRef.current?.style
-        if (style) {
-            style.width = slidesRefs[0].current?.offsetWidth + 'px'
-        }
-    }, [])
 
     useEffect(() => {
         document.addEventListener('keydown', onKeyDown)
@@ -185,6 +179,7 @@ export default function Slider(props: Props) {
                 </OuterButton>
             </AllButtonsWrapper>
             <SlidesWrapper
+                width={props.width}
                 ref={containerRef}
                 onMouseDown={onMouseDownContainer}
                 onMouseMove={onMouseMoveContainer}
