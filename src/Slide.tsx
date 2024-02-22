@@ -1,12 +1,8 @@
-import { forwardRef } from "react";
+import { forwardRef } from 'react'
+import SlideWrapper from './styled/SlideWrapper'
 
-/* eslint-disable react/display-name */
 const Slide = forwardRef((props: any, ref: any) => {
-  return (
-    <div className="slide" ref={ref}>
-      {props.children}
-    </div>
-  );
-});
+    return <SlideWrapper ref={ref}>{props.children}</SlideWrapper>
+})
 
-export default Slide;
+export default Slide

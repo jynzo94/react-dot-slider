@@ -1,145 +1,201 @@
-import ArrowLeftIcon from "./icons/ArrowLeftIcon";
-import ArrowRightIcon from "./icons/ArrowRightIcon";
-import React, { createRef, ReactNode, RefObject, useEffect } from "react";
-import { useRef } from "react";
-import useAnimation from "./useAnimation";
-import "./index.css";
+import React, {
+    createRef,
+    ReactNode,
+    RefObject,
+    useEffect,
+    useLayoutEffect
+} from 'react'
+import { useRef } from 'react'
+import useAnimation from './useAnimation'
+import Root from './styled/Root'
+import AllButtonsWrapper from './styled/AllButtonsWrapper'
+import OuterButton, { OuterButtonStyles } from './styled/OuterButton'
+import InnerButton, { InnerButtonStyles } from './styled/InnerButton'
+import SlidesWrapper from './styled/SlidesWrapper'
+import InnerButtonsWrapper from './styled/InnerButtonsWrapper'
+import ArrowSvg, { ArrowSvgStyles } from './styled/ArrowSvg'
+
+export type SliderStyle = ArrowSvgStyles &
+    OuterButtonStyles &
+    InnerButtonStyles & { arrowStrokeWidth?: number }
 
 type Props = {
-  children: ReactNode;
-};
+    children: ReactNode
+    styles?: SliderStyle
+}
 
 export default function Slider(props: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const slidesRefs = React.Children.map(props.children, () => {
-    return createRef<HTMLDivElement>();
-  }) as React.RefObject<HTMLDivElement>[];
+    const containerRef = useRef<HTMLDivElement>(null)
+    const slidesRefs = React.Children.map(props.children, () => {
+        return createRef<HTMLDivElement>()
+    }) as React.RefObject<HTMLDivElement>[]
 
-  const innerButtonsRefs = new Array<RefObject<HTMLButtonElement>>(
-    slidesRefs.length
-  ).fill(useRef<HTMLButtonElement>(null));
+    const innerButtonsRefs = new Array<RefObject<HTMLButtonElement>>(
+        slidesRefs.length
+    ).fill(useRef<HTMLButtonElement>(null))
 
-  const slidesElements = React.Children.map(
-    props.children,
-    (child: any, index: number) => {
-      return React.cloneElement(child, { ref: slidesRefs[index] });
+    const slidesElements = React.Children.map(
+        props.children,
+        (child: any, index: number) => {
+            return React.cloneElement(child, { ref: slidesRefs[index] })
+        }
+    )
+
+    const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'ArrowLeft') {
+            animation.goToPrev()
+        } else if (e.key === 'ArrowRight') {
+            animation.goToNext()
+        }
     }
-  );
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "ArrowLeft") {
-      animation.goToPrev();
-    } else if (e.key === "ArrowRight") {
-      animation.goToNext();
+    useLayoutEffect(() => {
+        const style = containerRef.current?.style
+        if (style) {
+            style.width = slidesRefs[0].current?.offsetWidth + 'px'
+        }
+    }, [])
+
+    useEffect(() => {
+        document.addEventListener('keydown', onKeyDown)
+        return () => {
+            document.removeEventListener('keydown', onKeyDown)
+        }
+    }, [])
+
+    const animation = useAnimation(containerRef, slidesRefs)
+
+    const onMouseDownContainer = (e: React.MouseEvent) => {
+        animation.dragStart(e.clientX, e.clientY)
     }
-  };
 
-  useEffect(() => {
-    const style = containerRef.current?.style;
-    if (style) {
-      style.width = slidesRefs[0].current?.offsetWidth + "px";
+    const onMouseMoveContainer = (e: React.MouseEvent) => {
+        animation.dragMove(e.clientX, e.clientY)
     }
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
 
-  const animation = useAnimation(containerRef, slidesRefs);
+    const onMouseUpContainer = () => {
+        animation.dragEnd()
+    }
 
-  const onMouseDownContainer = (e: React.MouseEvent) => {
-    animation.dragStart(e.clientX, e.clientY);
-  };
+    const onTouchStartContainer = (e: React.TouchEvent) => {
+        const t = e.touches[0]
+        animation.dragStart(t.clientX, t.clientY)
+    }
 
-  const onMouseMoveContainer = (e: React.MouseEvent) => {
-    animation.dragMove(e.clientX, e.clientY);
-  };
+    const onTouchMoveContainer = (e: React.TouchEvent) => {
+        const t = e.touches[0]
+        animation.dragMove(t.clientX, t.clientY)
+    }
 
-  const onMouseUpContainer = () => {
-    animation.dragEnd();
-  };
+    const onTouchEndContainer = () => {
+        animation.dragEnd()
+    }
 
-  const onTouchStartContainer = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    animation.dragStart(t.clientX, t.clientY);
-  };
+    const onClickButtonPrev = () => {
+        animation.goToPrev()
+    }
 
-  const onTouchMoveContainer = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    animation.dragMove(t.clientX, t.clientY);
-  };
+    const onClickInnerButton = (index: number) => {
+        animation.goTo(index)
+    }
 
-  const onTouchEndContainer = () => {
-    animation.dragEnd();
-  };
+    const onClickButtonNext = () => {
+        animation.goToNext()
+    }
 
-  const onClickButtonPrev = () => {
-    animation.goToPrev();
-  };
+    const arrowStrokeWidth = props.styles?.arrowStrokeWidth || 2.5
 
-  const onClickInnerButton = (index: number) => {
-    animation.goTo(index);
-  };
-
-  const onClickButtonNext = () => {
-    animation.goToNext();
-  };
-
-  return (
-    <div className="slider-root">
-      <div className={"slider-buttons-wrapper"}>
-        <button
-          onClick={onClickButtonPrev}
-          className={
-            animation.slideIndex === 0
-              ? "slider-outer-button-disabled"
-              : "slider-outer-button"
-          }
-        >
-          <ArrowLeftIcon />
-        </button>
-        <div className={"flex"}>
-          {slidesRefs.map((s, i) => {
-            return (
-              <button
-                ref={innerButtonsRefs[i]}
-                key={i}
-                className={
-                  animation.slideIndex === i
-                    ? "slider-inner-button-contained"
-                    : "slider-inner-button-outlined"
-                }
-                onClick={() => {
-                  onClickInnerButton(i);
-                }}
-              ></button>
-            );
-          })}
-        </div>
-        <button
-          onClick={onClickButtonNext}
-          className={
-            animation.slideIndex === slidesRefs.length - 1
-              ? "slider-outer-button-disabled"
-              : "slider-outer-button"
-          }
-        >
-          <ArrowRightIcon />
-        </button>
-      </div>
-      <div
-        ref={containerRef}
-        className={"slider-slides-wrapper"}
-        onMouseDown={onMouseDownContainer}
-        onMouseMove={onMouseMoveContainer}
-        onMouseUp={onMouseUpContainer}
-        onMouseOut={onMouseUpContainer}
-        onTouchStart={onTouchStartContainer}
-        onTouchMove={onTouchMoveContainer}
-        onTouchEnd={onTouchEndContainer}
-      >
-        {slidesElements}
-      </div>
-    </div>
-  );
+    return (
+        <Root>
+            <AllButtonsWrapper>
+                <OuterButton
+                    onClick={onClickButtonPrev}
+                    $disabled={animation.slideIndex === 0}
+                    $outerButtonBgColor={props.styles?.$outerButtonBgColor}
+                    $outerButtonBorder={props.styles?.$outerButtonBorder}
+                    $outerButtonMarginX={props.styles?.$outerButtonMarginX}
+                    $outerButtonSize={props.styles?.$outerButtonSize}
+                >
+                    <ArrowSvg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        stroke='currentColor'
+                        strokeWidth={arrowStrokeWidth}
+                        $arrowSvgColor={props.styles?.$arrowSvgColor}
+                    >
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18'
+                        />
+                    </ArrowSvg>
+                </OuterButton>
+                <InnerButtonsWrapper>
+                    {slidesRefs.map((s, i) => {
+                        return (
+                            <InnerButton
+                                ref={innerButtonsRefs[i]}
+                                key={i}
+                                onClick={() => {
+                                    onClickInnerButton(i)
+                                }}
+                                $active={animation.slideIndex === i}
+                                $innerButtonActiveBgColor={
+                                    props.styles?.$innerButtonActiveBgColor
+                                }
+                                $innerButtonBorder={
+                                    props.styles?.$innerButtonBorder
+                                }
+                                $innerButtonInactiveBgColor={
+                                    props.styles?.$innerButtonInactiveBgColor
+                                }
+                                $innerButtonMarginX={
+                                    props.styles?.$innerButtonMarginX
+                                }
+                                $innerButtonSize={
+                                    props.styles?.$innerButtonSize
+                                }
+                            />
+                        )
+                    })}
+                </InnerButtonsWrapper>
+                <OuterButton
+                    onClick={onClickButtonNext}
+                    $disabled={animation.slideIndex === slidesRefs.length - 1}
+                    $outerButtonBgColor={props.styles?.$outerButtonBgColor}
+                    $outerButtonBorder={props.styles?.$outerButtonBorder}
+                    $outerButtonMarginX={props.styles?.$outerButtonMarginX}
+                    $outerButtonSize={props.styles?.$outerButtonSize}
+                >
+                    <ArrowSvg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        stroke='currentColor'
+                        strokeWidth={arrowStrokeWidth}
+                        $arrowSvgColor={props.styles?.$arrowSvgColor}
+                    >
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            d='M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3'
+                        />
+                    </ArrowSvg>
+                </OuterButton>
+            </AllButtonsWrapper>
+            <SlidesWrapper
+                ref={containerRef}
+                onMouseDown={onMouseDownContainer}
+                onMouseMove={onMouseMoveContainer}
+                onMouseUp={onMouseUpContainer}
+                onMouseOut={onMouseUpContainer}
+                onTouchStart={onTouchStartContainer}
+                onTouchMove={onTouchMoveContainer}
+                onTouchEnd={onTouchEndContainer}
+            >
+                {slidesElements}
+            </SlidesWrapper>
+        </Root>
+    )
 }

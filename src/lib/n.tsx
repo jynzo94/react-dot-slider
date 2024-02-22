@@ -1,5 +1,5 @@
-export default function n(val:number|undefined){
-    if(val===undefined){
+export default function n(val: number | undefined) {
+    if (val === undefined) {
         throw new Error()
     }
 

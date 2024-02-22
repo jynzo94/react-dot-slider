@@ -1,7 +1,3 @@
-/// <reference types="react" />
-import Slider from "./Slider";
-declare const _default: {
-    Slider: typeof Slider;
-    Slide: import("react").ForwardRefExoticComponent<Omit<any, "ref"> & import("react").RefAttributes<unknown>>;
-};
-export default _default;
+import Slider from './Slider';
+import Slide from './Slide';
+export { Slider, Slide };

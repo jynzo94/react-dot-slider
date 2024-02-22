@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { RefObject } from 'react';
 type Ref<T extends HTMLDivElement = HTMLDivElement> = RefObject<T>;
 export default function useAnimation(container: Ref, slides: Ref[]): {
     slideIndex: number;
